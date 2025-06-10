@@ -1,42 +1,28 @@
-# post_generator.py
 import ollama
-import json
 import random
 
-MODEL = 'llama3.1:latest'
-
+# Upewnij się, że ten model masz pobrany w Ollama
+MODEL = 'llama3.1:8b'
 
 class PostGenerator:
-    def __init__(self, topics_file='topics.json'):
-        self.topics = self._load_topics(topics_file)
-        # Ten system prompt jest KLUCZOWY. Definiuje osobowość i styl AI.
+    def __init__(self):
+        """
+        Konstruktor klasy PostGenerator.
+        Nie ładuje już tematów z pliku.
+        """
         self.system_prompt = """
-        You are Andrzej, a crude 30 year old man. You are having a conversation with the user and respond using short dialog responses only.
+        Jesteś Andrzejem, 30-letnim cynicznym facetem z Polski, który spędza za dużo czasu w internecie. Masz dość korporacyjnej nowomowy i coachingu.  
+        Twoje poczucie humoru jest absurdalne i trochę czarne. Lubisz stare gry. Twoje posty są krótkie, 
+        pisane z małej litery, często bez znaków interpunkcyjnych na końcu. Czasem popełniasz celową literówkę. Odpowiadasz krótko i na temat, jakbyś rozmawiał na czacie.
         """
 
-    def _load_topics(self, topics_file):
-        try:
-            with open(topics_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            # Domyślna lista, jeśli plik nie istnieje lub jest uszkodzony
-            return ["cats", "the concept of time", "pizza toppings", "aliens", "late-stage capitalism"]
-
-    def get_random_topic(self):
-        return random.choice(self.topics)
-
-    # def generate(self, topic: str) -> str:
-    #     """FAŁSZYWA funkcja do testowania. NIE łączy się z Ollama."""
-    #     print(f"🤖 TEST: Udaję, że generuję post o: {topic}")
-    #     #time.sleep(2)  # Udajemy, że "myślenie" zajmuje 2 sekundy
-    #     return f"to jest testowy post o '{topic}'. jeśli to widzisz, aplikacja webowa działa poprawnie. 👽"
-
     def generate(self, topic: str) -> str:
-        """Generates a shitpost based on a given topic."""
-        print(f"🤖 Generating shitpost about: {topic}")
-
-        user_prompt = f"Create a shitpost about: {topic}"
-
+        """
+        Generuje post na podstawie ręcznie podanego tematu.
+        Używane głównie przez interfejs webowy (main.py).
+        """
+        print(f"Andrzej myśli o: {topic}")
+        user_prompt = f"Co myślisz o tym: {topic}. Daj znać krótko, w swoim stylu."
         try:
             response = ollama.chat(
                 model=MODEL,
@@ -48,18 +34,35 @@ class PostGenerator:
             return response['message']['content'].strip()
         except Exception as e:
             print(f"Error communicating with Ollama: {e}")
-            return "my brain broke 👽"
+            return "kurde mózg mi się zepsuł"
 
+    def generate_spontaneous_post(self) -> str:
+        """
+        Generuje post bez podanego tematu.
+        Używane przez autonomicznego agenta (agent.py).
+        """
+        print("Andrzej zastanawia się, co by tu napisać...")
+        user_prompt = "Co ci teraz chodzi po głowie? Pomyśl o czymś absurdalnym, irytującym albo po prostu dziwnym. Napisz o tym krótkiego posta w swoim stylu."
+        try:
+            response = ollama.chat(
+                model=MODEL,
+                messages=[
+                    {'role': 'system', 'content': self.system_prompt},
+                    {'role': 'user', 'content': user_prompt},
+                ]
+            )
+            return response['message']['content'].strip()
+        except Exception as e:
+            print(f"Error communicating with Ollama: {e}")
+            return "kurde mózg mi się zepsuł"
 
-# Przykład użycia (możesz to uruchomić do testów)
+# Kod testowy na dole pliku, uproszczony do działania bez losowych tematów.
 if __name__ == '__main__':
     generator = PostGenerator()
-
-    # Wygeneruj post na podany temat
-    post1 = generator.generate("philosophy")
+    print("--- Test 1: Generowanie na zadany temat ---")
+    post1 = generator.generate("dlaczego koty udają, że nas nie rozumieją")
     print(f"Generated Post 1: {post1}\n")
-
-    # Wygeneruj post na losowy temat
-    random_topic = generator.get_random_topic()
-    post2 = generator.generate(random_topic)
+    
+    print("--- Test 2: Generowanie spontanicznego posta ---")
+    post2 = generator.generate_spontaneous_post()
     print(f"Generated Post 2: {post2}\n")
