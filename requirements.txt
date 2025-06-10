@@ -2,3 +2,5 @@ python-dotenv
 ollama
 tweepy
 schedule
+gradio
+feedparser
