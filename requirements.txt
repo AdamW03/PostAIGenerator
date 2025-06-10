@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+ollama
+jinja2
+tweepy
+gradio
+python-multipart

@@ -1,0 +1,48 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Shitpost Factory</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace; background-color: #1a1a1a; color: #0f0; text-align: center;
+        }
+        .container {
+            max-width: 600px; margin: 50px auto; padding: 20px; border: 2px solid #0f0;
+        }
+        input, button {
+            background-color: #333; color: #0f0; border: 1px solid #0f0; padding: 10px; margin: 5px;
+        }
+        button:hover {
+            background-color: #0f0; color: #1a1a1a; cursor: pointer;
+        }
+        .post {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px dashed #0f0;
+            min-height: 50px;
+            text-align: left;
+            font-size: medium;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Shitpost Factory 👽</h1>
+        <form action="/" method="post">
+            <label for="topic">Enter a topic or use the random one:</label><br>
+            <input type="text" id="topic" name="topic" value="{{ topic }}" size="50">
+            <br>
+            <button type="submit">Generate Shitpost</button>
+        </form>
+
+        {% if post %}
+        <h2>Generated Post:</h2>
+        <div class="post">
+            {{ post }}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
